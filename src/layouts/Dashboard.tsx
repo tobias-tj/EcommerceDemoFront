@@ -20,7 +20,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-[#f6f6f6c7]">
         <AppSidebar />
         <main className="flex-1 p-4 overflow-auto">{children}</main>
       </div>

@@ -19,13 +19,22 @@ import { motion } from "framer-motion";
 import logoEcommerce from "@/assets/logoEcommerce.png";
 
 const projects = [
-  { url: "/", icon: Home, name: "Home" },
+  { url: "/home", icon: Home, name: "Home" },
   { url: "/list/items", icon: ShoppingBagIcon },
   { url: "/list/items/checkout", icon: ShieldCheck },
   { url: "/account", icon: User2 },
 ];
 
 const config = [{ url: "/closeAccount", icon: LogOut }];
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: index * 0.2, duration: 0.5 },
+  }),
+};
 
 export function AppSidebar() {
   const location = useLocation();
@@ -46,11 +55,15 @@ export function AppSidebar() {
         <SidebarGroup className="flex-grow">
           <SidebarGroupContent>
             <SidebarMenu>
-              {projects.map((project) => (
+              {projects.map((project, index) => (
                 <motion.div
                   key={project.name}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={index}
                   className="py-5"
                 >
                   <SidebarMenuItem>

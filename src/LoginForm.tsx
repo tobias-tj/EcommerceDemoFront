@@ -11,7 +11,7 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = () => {
     // Aquí irá tu lógica de login o signup
-    navigate("/dashboard");
+    navigate("/home");
   };
 
   const defaultOptions = {
@@ -24,19 +24,19 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-200">
-      <div className="bg-white shadow-2xl rounded-2xl flex max-w-4xl w-full">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200">
+      <div className="flex w-full max-w-4xl bg-white shadow-2xl rounded-2xl">
         {/* Lado izquierdo: imagen o patrón */}
-        <div className="hidden md:flex flex-col items-center justify-center bg-black text-white p-8 w-1/2 rounded-l-2xl">
-          <h2 className="text-4xl font-bold mb-4">TechStore</h2>
-          <p className="text-gray-400 text-center">
+        <div className="flex-col items-center justify-center hidden w-1/2 p-8 text-white bg-black md:flex rounded-l-2xl">
+          <h2 className="mb-4 text-4xl font-bold">TechStore</h2>
+          <p className="text-center text-gray-400">
             Encuentra los mejores productos electrónicos aquí.
           </p>
           <Lottie options={defaultOptions} height={300} width={300} />
         </div>
 
         {/* Lado derecho: formulario */}
-        <div className="flex flex-col p-10 w-full md:w-1/2">
+        <div className="flex flex-col w-full p-10 md:w-1/2">
           {/* Switch Login / Sign Up */}
           <div className="flex justify-center mb-8">
             <button
@@ -61,13 +61,13 @@ const LoginForm: React.FC = () => {
             </button>
           </div>
 
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <h3 className="mb-6 text-2xl font-semibold text-center text-gray-800">
             {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
           </h3>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-600 mb-1">
+              <label className="block mb-1 text-gray-600">
                 Correo electrónico
               </label>
               <input
@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-600 mb-1">Contraseña</label>
+              <label className="block mb-1 text-gray-600">Contraseña</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -92,7 +92,7 @@ const LoginForm: React.FC = () => {
 
             {!isLogin && (
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label className="block mb-1 text-gray-600">
                   Confirmar Contraseña
                 </label>
                 <input
@@ -106,15 +106,15 @@ const LoginForm: React.FC = () => {
 
           <button
             onClick={handleSubmit}
-            className="mt-8 w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+            className="w-full py-3 mt-8 font-medium text-white transition bg-black rounded-lg hover:bg-gray-800"
           >
             {isLogin ? "Iniciar Sesión" : "Registrarse"}
           </button>
 
           {isLogin && (
-            <p className="text-sm text-gray-500 mt-4 text-center">
+            <p className="mt-4 text-sm text-center text-gray-500">
               ¿Olvidaste tu contraseña?
-              <span className="text-black hover:underline cursor-pointer ml-1">
+              <span className="ml-1 text-black cursor-pointer hover:underline">
                 Recuperar
               </span>
             </p>
@@ -122,7 +122,7 @@ const LoginForm: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-gray-400 text-sm mt-8">Power By TJ</p>
+      <p className="mt-8 text-sm text-gray-400">Power By TJ</p>
     </div>
   );
 };

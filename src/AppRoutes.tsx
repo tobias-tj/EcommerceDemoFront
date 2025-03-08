@@ -32,7 +32,7 @@ function AppRoutes() {
           path="/"
           element={
             isLoggedIn ? (
-              <Navigate to="/dashboard" />
+              <Navigate to="/home" />
             ) : (
               <LoginForm onLogin={handleLogin} />
             )
@@ -53,7 +53,7 @@ function AppRoutes() {
           }
         /> */}
         <Route
-          path="/dashboard"
+          path="/home"
           element={
             <DashboardLayout>
               <DashboardPage />
