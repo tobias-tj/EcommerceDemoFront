@@ -20,8 +20,8 @@ import logoEcommerce from "@/assets/logoEcommerce.png";
 
 const projects = [
   { url: "/home", icon: Home, name: "Home" },
-  { url: "/list/items", icon: ShoppingBagIcon },
-  { url: "/list/items/checkout", icon: ShieldCheck },
+  { url: "/bag", icon: ShoppingBagIcon },
+  { url: "/checkout", icon: ShieldCheck },
   { url: "/account", icon: User2 },
 ];
 

@@ -8,6 +8,7 @@ import { useState } from "react";
 import LoginForm from "@/LoginForm";
 import DashboardLayout from "./layouts/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
+import BagPage from "./pages/BagPage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -57,6 +58,14 @@ function AppRoutes() {
           element={
             <DashboardLayout>
               <DashboardPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/bag"
+          element={
+            <DashboardLayout>
+              <BagPage />
             </DashboardLayout>
           }
         />
