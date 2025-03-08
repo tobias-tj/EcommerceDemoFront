@@ -22,7 +22,6 @@ const projects = [
   { url: "/home", icon: Home, name: "Home" },
   { url: "/bag", icon: ShoppingBagIcon },
   { url: "/checkout", icon: ShieldCheck },
-  { url: "/account", icon: User2 },
 ];
 
 const config = [{ url: "/closeAccount", icon: LogOut }];

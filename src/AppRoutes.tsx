@@ -9,6 +9,7 @@ import LoginForm from "@/LoginForm";
 import DashboardLayout from "./layouts/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
 import BagPage from "./pages/BagPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -66,6 +67,14 @@ function AppRoutes() {
           element={
             <DashboardLayout>
               <BagPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <DashboardLayout>
+              <CheckoutPage />
             </DashboardLayout>
           }
         />

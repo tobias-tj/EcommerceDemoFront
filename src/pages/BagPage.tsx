@@ -1,13 +1,12 @@
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, BadgeCheck } from "lucide-react";
 import { products } from "@/types/Product";
+import { Button } from "@/components/ui/button";
 
 export default function BagPage() {
   const total = products.reduce((sum, product) => sum + product.price, 0);
 
   return (
     <div className="p-6 space-y-6 min-w-5xl">
-      <h1 className="mb-6 text-3xl font-bold">Check your Bag Items</h1>
-
       <div className="flex">
         <div className="flex-1 space-y-4">
           {products.map((product) => (
@@ -68,9 +67,14 @@ export default function BagPage() {
               ))}
             </div>
             <div className="pt-4 mt-6 border-t">
-              <span className="text-lg font-bold">
-                Total: Gs. {total.toLocaleString()}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-lg font-bold">
+                  Total: Gs. {total.toLocaleString()}
+                </span>
+                <Button className="mt-2">
+                  <BadgeCheck /> Checkout
+                </Button>
+              </div>
             </div>
           </div>
         </div>
