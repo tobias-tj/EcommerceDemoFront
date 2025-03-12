@@ -1,23 +1,54 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAnimationCheck from "@/assets/animationCheck2.json";
+import animationCheck from "@/assets/animationCheck2.json";
 import Lottie from "react-lottie";
+import { loginAccount, registerAccount } from "./api/account/Auth";
+import AccountRequest from "./types/AccountRequest";
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  onLogin: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [login, setLogin] = useState<AccountRequest>({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = () => {
-    // Aquí irá tu lógica de login o signup
-    navigate("/home");
+  const handleSubmit = async () => {
+    const response = await loginAccount(login);
+
+    if (response.success) {
+      onLogin();
+      navigate("/home");
+    } else {
+      setError(response.message!);
+    }
+  };
+
+  const handleRegisterSubmit = async () => {
+    if (login.password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    const response = await registerAccount(login);
+
+    if (response?.success) {
+      navigate("/confirmEmail", { state: { email: login.email } });
+    } else {
+      setError(response?.message || "Error al registrar la cuenta");
+    }
   };
 
   const defaultOptions = {
     loop: true,
     autoplay: true,
-    animationData: useAnimationCheck,
+    animationData: animationCheck,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
@@ -26,7 +57,6 @@ const LoginForm: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200">
       <div className="flex w-full max-w-4xl bg-white shadow-2xl rounded-2xl">
-        {/* Lado izquierdo: imagen o patrón */}
         <div className="flex-col items-center justify-center hidden w-1/2 p-8 text-white bg-black md:flex rounded-l-2xl">
           <h2 className="mb-4 text-4xl font-bold">TechStore</h2>
           <p className="text-center text-gray-400">
@@ -35,9 +65,7 @@ const LoginForm: React.FC = () => {
           <Lottie options={defaultOptions} height={300} width={300} />
         </div>
 
-        {/* Lado derecho: formulario */}
         <div className="flex flex-col w-full p-10 md:w-1/2">
-          {/* Switch Login / Sign Up */}
           <div className="flex justify-center mb-8">
             <button
               onClick={() => setIsLogin(true)}
@@ -74,8 +102,8 @@ const LoginForm: React.FC = () => {
                 type="email"
                 placeholder="tuemail@correo.com"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={login.email}
+                onChange={(e) => setLogin({ ...login, email: e.target.value })}
               />
             </div>
 
@@ -85,8 +113,10 @@ const LoginForm: React.FC = () => {
                 type="password"
                 placeholder="••••••••"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={login.password}
+                onChange={(e) =>
+                  setLogin({ ...login, password: e.target.value })
+                }
               />
             </div>
 
@@ -99,17 +129,22 @@ const LoginForm: React.FC = () => {
                   type="password"
                   placeholder="••••••••"
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
             )}
           </div>
-
           <button
-            onClick={handleSubmit}
+            onClick={isLogin ? handleSubmit : handleRegisterSubmit}
             className="w-full py-3 mt-8 font-medium text-white transition bg-black rounded-lg hover:bg-gray-800"
           >
             {isLogin ? "Iniciar Sesión" : "Registrarse"}
           </button>
+
+          {error && (
+            <p className="mt-4 text-sm text-center text-red-500">{error}</p>
+          )}
 
           {isLogin && (
             <p className="mt-4 text-sm text-center text-gray-500">

@@ -4,27 +4,31 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginForm from "@/LoginForm";
 import DashboardLayout from "./layouts/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
 import BagPage from "./pages/BagPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import ConfirmEmailPage from "./pages/ConfirmEmailPage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    localStorage.getItem("token") !== null
   );
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
   const handleLogin = () => {
-    localStorage.setItem("isLoggedIn", "true");
     setIsLoggedIn(true);
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("isLoggedIn");
+  //   setIsLoggedIn(false);
+  // };
 
   return (
     <Router>
@@ -40,10 +44,8 @@ function AppRoutes() {
             )
           }
         />
-
-        {/* Rutas protegidas dentro del dashboard */}
-        {/* <Route
-          path="/dashboard"
+        <Route
+          path="/home"
           element={
             isLoggedIn ? (
               <DashboardLayout>
@@ -53,31 +55,32 @@ function AppRoutes() {
               <Navigate to="/" />
             )
           }
-        /> */}
-        <Route
-          path="/home"
-          element={
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
-          }
         />
         <Route
           path="/bag"
           element={
-            <DashboardLayout>
-              <BagPage />
-            </DashboardLayout>
+            isLoggedIn ? (
+              <DashboardLayout>
+                <BagPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
         <Route
           path="/checkout"
           element={
-            <DashboardLayout>
-              <CheckoutPage />
-            </DashboardLayout>
+            isLoggedIn ? (
+              <DashboardLayout>
+                <CheckoutPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
+        <Route path="/confirmEmail" element={<ConfirmEmailPage />} />
       </Routes>
     </Router>
   );
