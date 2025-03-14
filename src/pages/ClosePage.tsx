@@ -12,7 +12,7 @@ const ClosePage = () => {
     }, 3000);
   }, []);
   return (
-    <div className="flex items-center justify-center h-screen shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 lg:w-[900px] sm:w-[400px]">
+    <div className="flex items-center justify-center h-screen lg:w-[900px] sm:w-[400px]">
       <Card className="w-full max-w-sm text-center shadow-md">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-800">

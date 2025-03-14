@@ -149,7 +149,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           {isLogin && (
             <p className="mt-4 text-sm text-center text-gray-500">
               ¿Olvidaste tu contraseña?
-              <span className="ml-1 text-black cursor-pointer hover:underline">
+              <span
+                className="ml-1 text-black cursor-pointer hover:underline"
+                onClick={() => navigate("/recoverAccount")}
+              >
                 Recuperar
               </span>
             </p>
