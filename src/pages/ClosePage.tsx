@@ -12,8 +12,8 @@ const ClosePage = () => {
     }, 3000);
   }, []);
   return (
-    <div className="flex items-center justify-center h-screen lg:w-[900px] sm:w-[400px]">
-      <Card className="w-full max-w-sm text-center shadow-md">
+    <div className="flex flex-col items-center justify-center w-full p-6 space-y-6 ">
+      <Card className="">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-800">
             Cerrando Sesión
