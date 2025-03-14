@@ -11,6 +11,7 @@ import DashboardPage from "./pages/DashboardPage";
 import BagPage from "./pages/BagPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ConfirmEmailPage from "./pages/ConfirmEmailPage";
+import ClosePage from "./pages/ClosePage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -25,10 +26,6 @@ function AppRoutes() {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-  // const handleLogout = () => {
-  //   localStorage.removeItem("isLoggedIn");
-  //   setIsLoggedIn(false);
-  // };
 
   return (
     <Router>
@@ -74,6 +71,18 @@ function AppRoutes() {
             isLoggedIn ? (
               <DashboardLayout>
                 <CheckoutPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/closeAccount"
+          element={
+            isLoggedIn ? (
+              <DashboardLayout>
+                <ClosePage />
               </DashboardLayout>
             ) : (
               <Navigate to="/" />

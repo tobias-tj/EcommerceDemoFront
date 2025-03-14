@@ -8,7 +8,7 @@ export default function DashboardPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col items-center">
-        <div className="flex flex-col justify-start w-100">
+        <div className="flex flex-col justify-start p-2 w-100">
           <p className="text-[#3b3b3b] font-bold mb-2">Search Items...</p>
           <Input
             placeholder="Apple Watch, Samsung S22, Asus VivoBook, ...."
