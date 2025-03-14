@@ -1,10 +1,4 @@
-import {
-  Home,
-  ShoppingBagIcon,
-  ShieldCheck,
-  User2,
-  LogOut,
-} from "lucide-react";
+import { Home, ShoppingBagIcon, ShieldCheck, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,9 +13,9 @@ import { motion } from "framer-motion";
 import logoEcommerce from "@/assets/logoEcommerce.png";
 
 const projects = [
-  { url: "/home", icon: Home, name: "Home" },
-  { url: "/bag", icon: ShoppingBagIcon },
-  { url: "/checkout", icon: ShieldCheck },
+  { key: "home", url: "/home", icon: Home, name: "Home" },
+  { key: "bag", url: "/bag", icon: ShoppingBagIcon },
+  { key: "checkout", url: "/checkout", icon: ShieldCheck },
 ];
 
 const config = [{ url: "/closeAccount", icon: LogOut }];
@@ -56,7 +50,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {projects.map((project, index) => (
                 <motion.div
-                  key={project.name}
+                  key={project.key}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   variants={itemVariants}
