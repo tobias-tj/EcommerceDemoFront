@@ -13,6 +13,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import ConfirmEmailPage from "./pages/ConfirmEmailPage";
 import ClosePage from "./pages/ClosePage";
 import ChangedPasswordPage from "./pages/ChangedPasswordPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -48,6 +49,18 @@ function AppRoutes() {
             isLoggedIn ? (
               <DashboardLayout>
                 <DashboardPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/productDetails/:productId"
+          element={
+            isLoggedIn ? (
+              <DashboardLayout>
+                <ProductDetailsPage />
               </DashboardLayout>
             ) : (
               <Navigate to="/" />

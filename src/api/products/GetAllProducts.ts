@@ -11,7 +11,6 @@ export const getAllProducts = async (): Promise<Product[]> => {
       name: item.name,
       description: item.description,
       price: item.price,
-      color: item.color,
       rating: item.rating,
       image: item.image,
     }));

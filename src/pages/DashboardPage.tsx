@@ -8,6 +8,7 @@ import { getProductsByFilter } from "@/api/products/GetProductsByFilter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAllProducts } from "@/api/products/GetAllProducts";
 import { delay } from "@/utils/delay";
+import { useNavigate } from "react-router-dom";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -17,6 +18,8 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -112,7 +115,10 @@ export default function DashboardPage() {
         ) : (
           products.map((product: Product) => (
             <div key={product.id}>
-              <Card>
+              <Card
+                onClick={() => navigate(`/productDetails/${product.id}`)}
+                className="cursor-pointer"
+              >
                 <CardContent>
                   <img
                     src={`${API_URL_IMAGE}${product.image}`}
