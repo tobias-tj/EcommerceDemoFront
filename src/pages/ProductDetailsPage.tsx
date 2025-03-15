@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -74,7 +75,7 @@ const ProductDetailsPage = () => {
       initial="hidden"
       animate="visible"
       variants={stagger}
-      className="max-w-4xl p-6 mx-auto space-y-6"
+      className="p-6 mx-auto space-y-6 max-w-7xl"
     >
       <motion.div variants={slideIn}>
         <Button
@@ -131,9 +132,16 @@ const ProductDetailsPage = () => {
                 <span className="text-2xl font-semibold">
                   Gs. {product.price.toLocaleString()}
                 </span>
-                <Button>
-                  <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
-                </Button>
+
+                {product.quantity === 0 ? (
+                  <Button disabled>
+                    <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
+                  </Button>
+                ) : (
+                  <Button>
+                    <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
+                  </Button>
+                )}
               </div>
               <div className="flex justify-around space-x-4 mt-9">
                 <Button variant="outline" size="icon">
@@ -156,18 +164,23 @@ const ProductDetailsPage = () => {
         {product.comments.map((comment: Comments) => (
           <motion.div key={comment.id} variants={fadeIn}>
             <Card className="transition-shadow shadow-sm hover:shadow-md">
-              <CardHeader className="text-lg font-semibold">
-                Comentarios de usuarios
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-4">
                 <div className="space-y-2">
-                  <Badge className="text-[16px] bg-gray-100 text-gray-900">
-                    {comment.userMail}
-                  </Badge>
-                  <div className="flex flex-row items-center space-x-4">
-                    <p className="text-[18px] text-gray-700">
-                      {comment.content}
-                    </p>
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                        src={`https://i.pravatar.cc/150?u=${comment.userMail}`}
+                      />
+                      <AvatarFallback>{comment.userMail[0]}</AvatarFallback>
+                    </Avatar>
+                    <Badge className="text-[16px] bg-gray-100 text-gray-900">
+                      {comment.userMail}
+                    </Badge>
+                  </div>
+
+                  <p className="text-[18px] text-gray-700">{comment.content}</p>
+
+                  <div className="flex items-center space-x-2">
                     <Badge
                       variant="secondary"
                       className="flex items-center space-x-1"
