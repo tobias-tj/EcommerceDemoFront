@@ -7,6 +7,15 @@ export interface Product {
   image: string;
   brand: string;
   quantity: number;
+  comments: Array<Comments>;
+}
+
+export interface Comments {
+  id: number;
+  content: string;
+  score: number;
+  userId: number;
+  userMail: string;
 }
 
 export const products: Product[] = [
@@ -19,6 +28,7 @@ export const products: Product[] = [
     image: "src/assets/xiaomi14.jpg",
     brand: "",
     quantity: 1,
+    comments: new Array<Comments>(),
   },
   {
     id: 2,
@@ -29,6 +39,7 @@ export const products: Product[] = [
     image: "src/assets/iphone15pro.jpeg",
     brand: "",
     quantity: 1,
+    comments: new Array<Comments>(),
   },
   {
     id: 3,
@@ -39,6 +50,7 @@ export const products: Product[] = [
     image: "src/assets/macbookair.jpg",
     brand: "",
     quantity: 1,
+    comments: new Array<Comments>(),
   },
   {
     id: 4,
@@ -49,5 +61,6 @@ export const products: Product[] = [
     image: "src/assets/nintendo1.jpg",
     brand: "",
     quantity: 1,
+    comments: new Array<Comments>(),
   },
 ];

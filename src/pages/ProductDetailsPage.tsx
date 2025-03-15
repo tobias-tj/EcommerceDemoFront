@@ -1,12 +1,13 @@
 import { getProductById } from "@/api/products/GetProductById";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Product } from "@/types/Product";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Comments, Product } from "@/types/Product";
 import {
   ArrowLeft,
   InstagramIcon,
   PhoneCallIcon,
+  ShoppingBagIcon,
   StarIcon,
   X,
 } from "lucide-react";
@@ -34,94 +35,109 @@ const ProductDetailsPage = () => {
     };
 
     fetchProductDetails();
-  }, [productId, setIsLoading, setProduct]);
+  }, [productId]);
 
   if (isLoading) {
-    return <p>Cargando detalles del producto...</p>;
+    return (
+      <p className="text-center text-gray-500">
+        Cargando detalles del producto...
+      </p>
+    );
   }
 
   if (!product) {
-    return <p>Producto no encontrado.</p>;
+    return <p className="text-center text-gray-500">Producto no encontrado.</p>;
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="max-w-4xl p-6 mx-auto space-y-6">
       <Button
-        variant="outline"
-        className="mb-4"
+        variant="ghost"
+        className="mb-4 cursor-pointer"
         onClick={() => navigate("/home")}
       >
-        <ArrowLeft />
+        <ArrowLeft className="w-4 h-4 mr-2 " /> Volver
       </Button>
-      <div>
-        <div className="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2">
-          <div className="flex flex-col items-center">
-            <img
-              src={`${API_URL_IMAGE}${product.image}`}
-              alt={product.name}
-              className="w-[300px] h-[300px]"
-            />
-            <Badge className="w-[300px] h-[30px] bg-black">
-              <StarIcon className="text-yellow-400" />
-              <StarIcon className="text-yellow-400" />
-              <StarIcon className="text-yellow-400" />
-              <StarIcon />
-              <StarIcon />
-              <span className="text-[18px] ml-1">
-                {product.rating.toFixed(1)}
-              </span>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="flex flex-col items-center mt-4 space-y-4">
+          <img
+            src={`${API_URL_IMAGE}${product.image}`}
+            alt={product.name}
+            className="w-[300px] h-[300px] rounded-lg shadow-lg "
+          />
+          <div className="flex space-x-2">
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <StarIcon className="w-4 h-4 text-yellow-400" />
+              <span className="text-[17px]">{product.rating.toFixed(1)}</span>
             </Badge>
-            <div className="flex flex-row items-center justify-center mt-4">
-              {product.quantity == 0 ? (
-                <Badge className="bg-red-600 w-[80px] h-[45px] text-[18px]">
-                  Unavailable
-                </Badge>
-              ) : (
-                <Badge className="bg-green-600 w-[80px] h-[45px] text-[18px]">
-                  Stock
-                </Badge>
-              )}
-
-              <Badge className="ml-2 bg-black w-[80px] h-[45px] text-[18px]">
-                {product.brand}
+            {product.quantity === 0 ? (
+              <Badge variant="destructive" className="text-[17px]">
+                Agotado
               </Badge>
-            </div>
+            ) : (
+              <Badge variant="default" className="text-[17px]">
+                Disponible
+              </Badge>
+            )}
+            <Badge variant="outline" className="text-[17px]">
+              {product.brand}
+            </Badge>
           </div>
+        </div>
 
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">{product.description}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-semibold">
+                Gs. {product.price.toLocaleString()}
+              </span>
+              <Button>
+                <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
+              </Button>
+            </div>
+            <div className="flex justify-around space-x-4 mt-9">
+              <Button variant="outline" size="icon">
+                <InstagramIcon className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="icon">
+                <X className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="icon">
+                <PhoneCallIcon className="w-4 h-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      {product.comments.map((comment: Comments) => (
+        <div key={comment.id}>
           <Card>
+            <CardHeader>Comentarios de usuarios</CardHeader>
             <CardContent>
-              <h1 className="mb-2 text-[24px] font-bold">{product.name}</h1>
-
-              <div className="flex flex-col items-center">
-                <p className="text-[18px]">{product.description}</p>
-                <Badge
-                  variant={"outline"}
-                  className="text-[22px] mt-5 bg-gray-100 text-black"
-                >
-                  Gs. {product.price.toLocaleString()}
-                </Badge>
-              </div>
-
-              <div className="flex flex-row justify-around mt-18">
-                <Button variant={"outline"}>
-                  <InstagramIcon />
-                </Button>
-                <Button variant={"outline"}>
-                  <X />
-                </Button>
-                <Button variant={"outline"}>
-                  <PhoneCallIcon />
-                </Button>
+              <div>
+                <Badge className="text-[16px]">{comment.userMail}</Badge>
+                <div className="flex flex-row space-x-4">
+                  <p className="text-[18px]">{comment.content}</p>
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-1"
+                  >
+                    <StarIcon className="w-4 h-4 text-yellow-400" />
+                    <span className="text-[17px]">
+                      {product.rating.toFixed(1)}
+                    </span>
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2">
-        <p>Hola amigfo</p>
-        <p>Hola amigfo</p>
-        <p>Hola amigfo</p>
-      </div>
+      ))}
     </div>
   );
 };
