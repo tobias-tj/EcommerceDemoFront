@@ -9,16 +9,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getAllProducts } from "@/api/products/GetAllProducts";
 import { delay } from "@/utils/delay";
 import { useNavigate } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
 export default function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
-
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
+  const [inStock, setInStock] = useState<boolean | undefined>(undefined);
+  const [brand, setBrand] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
@@ -37,18 +47,29 @@ export default function DashboardPage() {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      if (searchTerm.trim() == "") {
-        fetchProducts();
-      } else {
-        const filteredProducts = await getProductsByFilter(searchTerm);
-        await delay(1000);
-        setProducts(filteredProducts);
-      }
+      const filteredProducts = await getProductsByFilter(
+        searchTerm.trim() === "" ? "" : searchTerm,
+        minPrice,
+        maxPrice,
+        inStock,
+        brand
+      );
+      await delay(1000);
+      setProducts(filteredProducts);
     } catch (error) {
       console.error("Error searching product:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
+    setInStock(undefined);
+    setBrand(undefined);
+    fetchProducts();
   };
 
   useEffect(() => {
@@ -64,15 +85,56 @@ export default function DashboardPage() {
             placeholder="Apple Watch, Samsung S22, Asus VivoBook, ...."
             className="max-w-md bg-white inset-shadow-xs inset-shadow-gray-300"
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
                 handleSearch();
               }
             }}
           />
+        </div>
+        <div className="flex flex-wrap gap-4 mt-4">
+          <Input
+            type="number"
+            placeholder="Precio mínimo"
+            value={minPrice || ""}
+            onChange={(e) => setMinPrice(parseFloat(e.target.value))}
+            className="w-40"
+          />
+          <Input
+            type="number"
+            placeholder="Precio máximo"
+            value={maxPrice || ""}
+            onChange={(e) => setMaxPrice(parseFloat(e.target.value))}
+            className="w-40"
+          />
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="inStock"
+              checked={inStock || false}
+              onCheckedChange={(checked) => setInStock(!!checked)}
+            />
+            <Label htmlFor="inStock">En stock</Label>
+          </div>
+          <Select
+            value={brand || ""}
+            onValueChange={(value) => setBrand(value)}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Marca" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Nike">Nike</SelectItem>
+              <SelectItem value="Adidas">Adidas</SelectItem>
+              <SelectItem value="Xiaomi">Xiaomi</SelectItem>
+              <SelectItem value="Apple">Apple</SelectItem>
+              <SelectItem value="Nintendo">Nintendo</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleSearch}>Buscar</Button>
+          <Button variant="outline" onClick={resetFilters}>
+            Limpiar filtros
+          </Button>
         </div>
       </div>
 
@@ -86,7 +148,7 @@ export default function DashboardPage() {
             >
               <Card>
                 <CardContent>
-                  <Skeleton className="h-[200px] w-[200px] rounded-lg  p-3" />
+                  <Skeleton className="h-[200px] w-[200px] rounded-lg p-3" />
                 </CardContent>
               </Card>
               <div className="p-2">
@@ -100,12 +162,11 @@ export default function DashboardPage() {
             </div>
           ))
         ) : products.length === 0 ? (
-          // Mostrar mensaje si no hay productos
           <div>
             <div className="flex flex-col items-center justify-center">
               <Card>
                 <CardContent>
-                  <p className="text-xl text-center text-gray-500 ">
+                  <p className="text-xl text-center text-gray-500">
                     No se ha encontrado ese producto disponible.
                   </p>
                 </CardContent>
@@ -145,7 +206,6 @@ export default function DashboardPage() {
             </div>
           ))
         )}
-        {}
       </div>
     </div>
   );
