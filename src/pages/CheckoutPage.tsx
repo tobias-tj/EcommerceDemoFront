@@ -5,12 +5,29 @@ import { useEffect, useState } from "react";
 import { Order } from "@/types/Order";
 import { getAllOrderPreparedByUser } from "@/api/checkout/GetAllOrderPrepared";
 import { delay } from "@/utils/delay";
+import { ShippingAddressModal } from "@/components/ShippingAddressModal";
+import { PaymentMethodModal } from "@/components/PaymentMethodModal";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
 export default function CheckoutPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const [shippingAddress, setShippingAddress] = useState({
+    name: "Nombre Completo",
+    street: "Calle",
+    city: "Ciudad",
+    country: "País",
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState({
+    cardNumber: "**** **** **** 123",
+    cardType: "Tipo de Tarjeta",
+  });
 
   const itemPrice = orders?.map((orderItem) =>
     orderItem.orderItems.reduce(
@@ -53,12 +70,17 @@ export default function CheckoutPage() {
             <CardContent>
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col justify-start">
-                  <p className="text-[18px]">Tobias Jara</p>
-                  <p className="text-[18px]">123 Mcal Lopez</p>
-                  <p className="text-[18px]">Asunción</p>
-                  <p className="text-[18px]">Paraguay</p>
+                  <p className="text-[18px]">{shippingAddress.name}</p>
+                  <p className="text-[18px]">{shippingAddress.street}</p>
+                  <p className="text-[18px]">{shippingAddress.city}</p>
+                  <p className="text-[18px]">{shippingAddress.country}</p>
                 </div>
-                <Button variant={"outline"}>Change</Button>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setIsShippingModalOpen(true)}
+                >
+                  Change
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -71,10 +93,11 @@ export default function CheckoutPage() {
                 <div className="flex flex-col justify-start">
                   <div className="flex flex-row">
                     <CreditCard className="mr-2 text-gray-800" />
-                    <p className="text-[18px] font-bold">Mastercard </p>
+                    <p className="text-[18px] font-bold">
+                      {paymentMethod.cardType}
+                    </p>
                     <p className="text-[18px] ml-1 font-light">
-                      {" "}
-                      ending in 321
+                      ending in {paymentMethod.cardNumber.slice(-4)}
                     </p>
                   </div>
                   <div className="flex flex-row mt-4">
@@ -84,7 +107,12 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 </div>
-                <Button variant={"outline"}>Change</Button>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setIsPaymentModalOpen(true)}
+                >
+                  Change
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -157,6 +185,18 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </div>
+      {/* Modales */}
+      <ShippingAddressModal
+        isOpen={isShippingModalOpen}
+        onClose={() => setIsShippingModalOpen(false)}
+        onSave={(address) => setShippingAddress(address)}
+      />
+
+      <PaymentMethodModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSave={(payment) => setPaymentMethod(payment)}
+      />
     </div>
   );
 }
