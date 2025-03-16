@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
+import { toast } from "sonner";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -29,6 +31,7 @@ export default function DashboardPage() {
   const [inStock, setInStock] = useState<boolean | undefined>(undefined);
   const [brand, setBrand] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
@@ -42,6 +45,24 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const addProductCart = async (productId: number) => {
+    const token = localStorage.getItem("token") || "NULL";
+    setIsAddingToCart(true);
+
+    toast.promise(AddCartByProductId(productId, token), {
+      loading: "Agregando producto al carrito...",
+      success: () => {
+        setIsAddingToCart(false);
+        return "Producto agregado al carrito";
+      },
+      error: (error) => {
+        setIsAddingToCart(false);
+        console.log(error);
+        return "Error al agregar el producto";
+      },
+    });
   };
 
   const handleSearch = async () => {
@@ -198,7 +219,14 @@ export default function DashboardPage() {
                   <p className="text-[20px] font-bold">
                     Gs. {product.price.toLocaleString()}
                   </p>
-                  <Button className="mx-2">
+                  <Button
+                    className="mx-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addProductCart(product.id);
+                    }}
+                    disabled={isAddingToCart}
+                  >
                     <Plus />
                   </Button>
                 </div>

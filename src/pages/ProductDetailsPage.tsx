@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
+import { toast } from "sonner";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -41,7 +43,27 @@ const ProductDetailsPage = () => {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+
   const navigate = useNavigate();
+
+  const addProductCart = async (productId: number) => {
+    const token = localStorage.getItem("token") || "NULL";
+    setIsAddingToCart(true);
+
+    toast.promise(AddCartByProductId(productId, token), {
+      loading: "Agregando producto al carrito...",
+      success: () => {
+        setIsAddingToCart(false);
+        return "Producto agregado al carrito";
+      },
+      error: (error) => {
+        setIsAddingToCart(false);
+        console.log(error);
+        return "Error al agregar el producto";
+      },
+    });
+  };
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -138,7 +160,13 @@ const ProductDetailsPage = () => {
                     <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
                   </Button>
                 ) : (
-                  <Button>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addProductCart(product.id);
+                    }}
+                    disabled={isAddingToCart}
+                  >
                     <ShoppingBagIcon className="w-4 h-4 mr-2" /> Agregar
                   </Button>
                 )}

@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 const ClosePage = () => {
   useEffect(() => {
-    // Simular el cierre de sesión
     setTimeout(() => {
       localStorage.clear();
       window.location.href = "/";

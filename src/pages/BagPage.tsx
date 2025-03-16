@@ -1,4 +1,4 @@
-import { Plus, Minus, BadgeCheck } from "lucide-react";
+import { Plus, Minus, BadgeCheck, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Cart } from "@/types/Cart";
@@ -6,6 +6,7 @@ import { delay } from "@/utils/delay";
 import { getAllCartByUser } from "@/api/cart/GetAllCartByUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyCartAnimation } from "@/components/EmptyCartAnimation";
+import { ClearCartByUser } from "@/api/cart/ClearCartByUser";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -14,6 +15,16 @@ export default function BagPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const total = carts?.items.reduce((sum, cart) => sum + cart.productPrice, 0);
+
+  const clearCart = async () => {
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      await ClearCartByUser(token);
+      await fetchCarts();
+    } catch (error) {
+      console.error("Failed to clear Cart:", error);
+    }
+  };
 
   const fetchCarts = async () => {
     setIsLoading(true);
@@ -122,8 +133,20 @@ export default function BagPage() {
         </div>
 
         <div className="w-1/4 ml-12">
-          <div className="sticky top-6">
-            <h2 className="mb-4 text-xl font-bold">Your Bag</h2>
+          <div className="sticky flex-col top-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">En el Carrito</h2>
+              <Button
+                variant="destructive"
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => {
+                  clearCart();
+                }}
+              >
+                <Trash2Icon size={16} />
+              </Button>
+            </div>
+
             <div className="space-y-4">
               {carts.items.map((cart) => (
                 <div key={cart.id} className="flex items-center">
