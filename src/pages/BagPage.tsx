@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyCartAnimation } from "@/components/EmptyCartAnimation";
 import { ClearCartByUser } from "@/api/cart/ClearCartByUser";
 import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
+import { PreparedOrderByUser } from "@/api/checkout/PrepareOrder";
+import { toast } from "sonner";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -15,8 +17,10 @@ export default function BagPage() {
   const [carts, setCarts] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const total = carts?.items.reduce((sum, cart) => sum + cart.productPrice, 0);
-
+  const total = carts?.items.reduce(
+    (sum, cart) => sum + cart.productPrice * cart.quantity,
+    0
+  );
   const clearCart = async () => {
     const token = localStorage.getItem("token") || "NULL";
     try {
@@ -25,6 +29,24 @@ export default function BagPage() {
     } catch (error) {
       console.error("Failed to clear Cart:", error);
     }
+  };
+
+  const preparedOrder = async () => {
+    const token = localStorage.getItem("token") || "NULL";
+    toast.promise(PreparedOrderByUser(token), {
+      loading: "Preparando Orden....",
+      success: () => {
+        return "Se ha agregado la orden✌❤";
+      },
+      error: (error) => {
+        console.log(error);
+        return "Error al agregar la orden. Lo sentimos😓";
+      },
+      finally: () => {
+        delay(2000);
+        fetchCarts();
+      },
+    });
   };
 
   const addProductCart = async (productId: number) => {
@@ -191,7 +213,10 @@ export default function BagPage() {
                 <span className="text-lg font-bold">
                   Total: Gs. {total?.toLocaleString()}
                 </span>
-                <Button className="mt-2">
+                <Button
+                  className="mt-2 cursor-pointer"
+                  onClick={() => preparedOrder()}
+                >
                   <BadgeCheck /> Checkout
                 </Button>
               </div>
