@@ -1,10 +1,46 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CreditCard, MapPinHouseIcon } from "lucide-react";
-import { products } from "@/types/Product";
+import { useEffect, useState } from "react";
+import { Order } from "@/types/Order";
+import { getAllOrderPreparedByUser } from "@/api/checkout/GetAllOrderPrepared";
+import { delay } from "@/utils/delay";
+
+const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
 export default function CheckoutPage() {
-  const total = products.reduce((sum, product) => sum + product.price, 0);
+  const [orders, setOrders] = useState<Order[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const itemPrice = orders?.map((orderItem) =>
+    orderItem.orderItems.reduce(
+      (sum, order) => sum + order.price * order.quantity,
+      0
+    )
+  );
+
+  const totalPrice = itemPrice?.reduce((sum, price) => sum + price, 0) || 0;
+
+  const formattedItemPrices =
+    itemPrice?.map((price) => price.toLocaleString()) || [];
+
+  const fetchOrdersPrepared = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      const orders = await getAllOrderPreparedByUser(token);
+      await delay(1000);
+      setOrders(orders);
+    } catch (error) {
+      console.error("Failed to fetch carts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrdersPrepared();
+  }, []);
 
   return (
     <div className="p-6 space-y-6 min-w-5xl ">
@@ -55,43 +91,41 @@ export default function CheckoutPage() {
 
           <Card className="p-5 mx-8 mt-4">
             <CardTitle className="text-[20px] font-medium p-2">
-              REVIEW YOUR BAG
+              REVIEW YOUR ORDER
             </CardTitle>
             <CardContent>
-              {products.map((product) => (
+              {orders?.map((order) => (
                 <div
-                  key={product.id}
+                  key={order.id}
                   className="flex items-center p-4 bg-white rounded-lg shadow-md"
                 >
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="object-cover w-24 h-24 rounded-lg"
-                  />
+                  {order.orderItems.map((orderItem) => (
+                    <div key={orderItem.id}>
+                      <img
+                        src={`${API_URL_IMAGE}${orderItem.productImage}`}
+                        alt={orderItem.productName}
+                        className="object-cover w-24 h-24 rounded-lg"
+                      />
 
-                  <div className="flex-1 ml-4">
-                    <h2 className="text-xl font-semibold">{product.title}</h2>
-                    <p className="text-gray-500">{product.color}</p>
-                    <p className="text-sm text-gray-400">
-                      {product.description}
-                    </p>
+                      <div className="flex-1 ml-4">
+                        <h2 className="text-xl font-semibold">
+                          {orderItem.productName}
+                        </h2>
+                        <p className="text-sm text-gray-400">
+                          {orderItem.productBrand}
+                        </p>
 
-                    <div className="flex items-center mt-2 space-x-2">
-                      <span className="text-green-500">★★★★☆</span>
-                      <span className="text-sm text-gray-500">
-                        {product.rating} / 5
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-lg font-bold">
-                        Gs. {product.price.toLocaleString()}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <span>{product.id}</span>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-lg font-bold">
+                            Gs. {orderItem.price.toLocaleString()}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span>{orderItem.quantity}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               ))}
             </CardContent>
@@ -104,11 +138,17 @@ export default function CheckoutPage() {
               <h2 className="mb-4 text-xl font-bold">Order Summary</h2>
               <div className="space-y-4">
                 <div className="flex flex-col">
-                  <p>Items: </p>
-                  <p>Shipping: </p>
-                  <p>Payment discount: </p>
+                  <div className="flex flex-row space-x-2">
+                    <ul className="list-disc list-inside">
+                      {formattedItemPrices.map((price, index) => (
+                        <li key={index}>Gs. {price}</li>
+                      ))}
+                    </ul>
+                    <span>+</span>
+                  </div>
+
                   <span className="text-lg font-bold">
-                    Order Total: Gs. {total.toLocaleString()}
+                    Order Total: Gs. {totalPrice?.toLocaleString()}
                   </span>
                   <Button className="mt-2">Place your order</Button>
                 </div>
