@@ -51,7 +51,7 @@ const ProductDetailsPage = () => {
     const token = localStorage.getItem("token") || "NULL";
     setIsAddingToCart(true);
 
-    toast.promise(AddCartByProductId(productId, token), {
+    toast.promise(AddCartByProductId(productId, token, 1), {
       loading: "Agregando producto al carrito...",
       success: () => {
         setIsAddingToCart(false);

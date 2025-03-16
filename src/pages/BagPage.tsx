@@ -7,6 +7,7 @@ import { getAllCartByUser } from "@/api/cart/GetAllCartByUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyCartAnimation } from "@/components/EmptyCartAnimation";
 import { ClearCartByUser } from "@/api/cart/ClearCartByUser";
+import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -23,6 +24,26 @@ export default function BagPage() {
       await fetchCarts();
     } catch (error) {
       console.error("Failed to clear Cart:", error);
+    }
+  };
+
+  const addProductCart = async (productId: number) => {
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      await AddCartByProductId(productId, token, 1);
+      await fetchCarts();
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
+  };
+
+  const decreaseProductCart = async (productId: number) => {
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      await AddCartByProductId(productId, token, -1);
+      await fetchCarts();
+    } catch (error) {
+      console.error("Error decreasing product in cart:", error);
     }
   };
 
@@ -118,11 +139,17 @@ export default function BagPage() {
                     Gs. {cart.productPrice.toLocaleString()}
                   </span>
                   <div className="flex items-center space-x-2">
-                    <button className="flex items-center justify-center w-6 h-6 text-white bg-red-500 rounded-full">
+                    <button
+                      className="flex items-center justify-center w-6 h-6 text-white bg-red-500 rounded-full"
+                      onClick={() => decreaseProductCart(cart.productId)}
+                    >
                       <Minus size={14} />
                     </button>
                     <span>{cart.quantity}</span>
-                    <button className="flex items-center justify-center w-6 h-6 text-white bg-green-500 rounded-full">
+                    <button
+                      className="flex items-center justify-center w-6 h-6 text-white bg-green-500 rounded-full"
+                      onClick={() => addProductCart(cart.productId)}
+                    >
                       <Plus size={14} />
                     </button>
                   </div>
