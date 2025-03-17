@@ -1,35 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { CreditCard, MapPinHouseIcon } from "lucide-react";
+import {
+  BuildingIcon,
+  Flag,
+  MapPinHouseIcon,
+  MapPlusIcon,
+  PhoneCallIcon,
+  User2Icon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Order } from "@/types/Order";
 import { getAllOrderPreparedByUser } from "@/api/checkout/GetAllOrderPrepared";
 import { delay } from "@/utils/delay";
 import { ShippingAddressModal } from "@/components/ShippingAddressModal";
-import { PaymentMethodModal } from "@/components/PaymentMethodModal";
 import { StripeCheckout } from "@/components/StripeCheckout";
+import { toast } from "sonner";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
 export default function CheckoutPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [, setIsLoading] = useState<boolean>(true);
 
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const [showStripeCheckout, setShowStripeCheckout] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState({
-    name: "Nombre Completo",
-    street: "Calle",
-    city: "Ciudad",
-    country: "País",
-  });
-
-  const [paymentMethod, setPaymentMethod] = useState({
-    cardNumber: "**** **** **** 123",
-    cardType: "Tipo de Tarjeta",
+    name: "",
+    street: "",
+    city: "",
+    country: "",
+    phone: "",
   });
 
   const itemPrice = orders?.map((orderItem) =>
@@ -62,6 +64,23 @@ export default function CheckoutPage() {
     fetchOrdersPrepared();
   }, []);
 
+  const handleCheckout = () => {
+    if (
+      !shippingAddress.name ||
+      !shippingAddress.street ||
+      !shippingAddress.city ||
+      !shippingAddress.country ||
+      !shippingAddress.phone
+    ) {
+      toast.error("Por favor complete todos los campos de la dirección.");
+      return;
+    } else if (orders == null || orders.length == 0) {
+      toast.error("Por favor agregue de su carrito para procesarlos.");
+      return;
+    }
+    setShowStripeCheckout(true);
+  };
+
   return (
     <div className="p-6 space-y-6 min-w-5xl ">
       <div className="flex">
@@ -73,36 +92,56 @@ export default function CheckoutPage() {
             <CardContent>
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col justify-start">
-                  <p className="text-[18px]">{shippingAddress.name}</p>
-                  <p className="text-[18px]">{shippingAddress.street}</p>
-                  <p className="text-[18px]">{shippingAddress.city}</p>
-                  <p className="text-[18px]">{shippingAddress.country}</p>
-                </div>
-                <Button
-                  variant={"outline"}
-                  onClick={() => setIsShippingModalOpen(true)}
-                >
-                  Change
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="p-5 mx-8 mt-4">
-            <CardTitle className="text-[20px] font-medium p-2">
-              PAYMENT METHOD
-            </CardTitle>
-            <CardContent>
-              <div className="flex flex-row justify-between">
-                <div className="flex flex-col justify-start">
-                  <div className="flex flex-row">
-                    <CreditCard className="mr-2 text-gray-800" />
-                    <p className="text-[18px] font-bold">
-                      {paymentMethod.cardType}
-                    </p>
-                    <p className="text-[18px] ml-1 font-light">
-                      ending in {paymentMethod.cardNumber.slice(-4)}
-                    </p>
-                  </div>
+                  <p className="text-[18px]">
+                    <div className="flex flex-row">
+                      <User2Icon className="mr-2" />
+                      {shippingAddress.name == "" ? (
+                        <span className="text-[#d8d8d8]">Nombre Completo</span>
+                      ) : (
+                        <span> {shippingAddress.name}</span>
+                      )}
+                    </div>
+                  </p>
+                  <p className="text-[18px]">
+                    <div className="flex flex-row">
+                      <MapPlusIcon className="mr-2" />
+                      {shippingAddress.street == "" ? (
+                        <span className="text-[#d8d8d8]">Calle Principal</span>
+                      ) : (
+                        <span> {shippingAddress.street}</span>
+                      )}
+                    </div>
+                  </p>
+                  <p className="text-[18px]">
+                    <div className="flex flex-row">
+                      <BuildingIcon className="mr-2" />
+                      {shippingAddress.city == "" ? (
+                        <span className="text-[#d8d8d8]">Ciudad</span>
+                      ) : (
+                        <span> {shippingAddress.city}</span>
+                      )}
+                    </div>
+                  </p>
+                  <p className="text-[18px]">
+                    <div className="flex flex-row">
+                      <Flag className="mr-2" />
+                      {shippingAddress.country == "" ? (
+                        <span className="text-[#d8d8d8]">País</span>
+                      ) : (
+                        <span> {shippingAddress.country}</span>
+                      )}
+                    </div>
+                  </p>
+                  <p className="text-[18px]">
+                    <div className="flex flex-row">
+                      <PhoneCallIcon className="mr-2" />
+                      {shippingAddress.phone == "" ? (
+                        <span className="text-[#d8d8d8]">Telefono</span>
+                      ) : (
+                        <span> {shippingAddress.phone}</span>
+                      )}
+                    </div>
+                  </p>
                   <div className="flex flex-row mt-4">
                     <MapPinHouseIcon className="mr-2 text-green-800" />
                     <p className="text-[18px] ml-1 font-light">
@@ -112,7 +151,7 @@ export default function CheckoutPage() {
                 </div>
                 <Button
                   variant={"outline"}
-                  onClick={() => setIsPaymentModalOpen(true)}
+                  onClick={() => setIsShippingModalOpen(true)}
                 >
                   Change
                 </Button>
@@ -181,10 +220,7 @@ export default function CheckoutPage() {
                   <span className="text-lg font-bold">
                     Order Total: Gs. {totalPrice?.toLocaleString()}
                   </span>
-                  <Button
-                    className="mt-2"
-                    onClick={() => setShowStripeCheckout(true)}
-                  >
+                  <Button className="mt-2" onClick={() => handleCheckout()}>
                     Place your order
                   </Button>
                 </div>
@@ -200,20 +236,15 @@ export default function CheckoutPage() {
         onSave={(address) => setShippingAddress(address)}
       />
 
-      <PaymentMethodModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        onSave={(payment) => setPaymentMethod(payment)}
-      />
       {/* Flujo de Stripe */}
       {showStripeCheckout && (
         <StripeCheckout
           onSuccess={() => {
             console.log("Pago exitoso");
-            setShowStripeCheckout(false); // Ocultar el flujo de Stripe después de un pago exitoso
+            setShowStripeCheckout(false);
           }}
           shippingAddress={shippingAddress.street}
-          phoneNumber={"0981123456"}
+          phoneNumber={shippingAddress.phone}
         />
       )}
     </div>

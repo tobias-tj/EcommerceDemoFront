@@ -7,7 +7,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useShippingAddressStore } from "@/types/useShippingAddressStore";
+import { toast } from "sonner";
 
 interface ShippingAddressModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface ShippingAddressModalProps {
     street: string;
     city: string;
     country: string;
+    phone: string;
   }) => void;
 }
 
@@ -25,16 +27,35 @@ export function ShippingAddressModal({
   onClose,
   onSave,
 }: ShippingAddressModalProps) {
-  const [name, setName] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
+  const {
+    name,
+    street,
+    city,
+    country,
+    phone,
+    setName,
+    setStreet,
+    setCity,
+    setCountry,
+    setPhone,
+    clearAddress,
+  } = useShippingAddressStore();
 
   const handleSave = () => {
-    onSave({ name, street, city, country });
+    // Validar los campos antes de guardar
+    if (!name || !street || !city || !country || !phone) {
+      toast.error("Por favor, complete todos los campos.");
+      return;
+    }
+
+    if (phone.length !== 9) {
+      toast.error("El número de teléfono debe tener 9 dígitos.");
+      return;
+    }
+    onSave({ name, street, city, country, phone });
+    clearAddress();
     onClose();
   };
-
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent className="bg-[#fff]">
@@ -59,6 +80,16 @@ export function ShippingAddressModal({
             <Input
               value={country}
               onChange={(e) => setCountry(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>Numero de Telefono</Label>
+            <Input
+              value={phone}
+              type="number"
+              prefix="+595"
+              maxLength={9}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <Button onClick={handleSave}>Save</Button>
