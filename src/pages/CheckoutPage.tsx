@@ -7,6 +7,7 @@ import { getAllOrderPreparedByUser } from "@/api/checkout/GetAllOrderPrepared";
 import { delay } from "@/utils/delay";
 import { ShippingAddressModal } from "@/components/ShippingAddressModal";
 import { PaymentMethodModal } from "@/components/PaymentMethodModal";
+import { StripeCheckout } from "@/components/StripeCheckout";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -16,6 +17,8 @@ export default function CheckoutPage() {
 
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState({
     name: "Nombre Completo",
@@ -178,7 +181,12 @@ export default function CheckoutPage() {
                   <span className="text-lg font-bold">
                     Order Total: Gs. {totalPrice?.toLocaleString()}
                   </span>
-                  <Button className="mt-2">Place your order</Button>
+                  <Button
+                    className="mt-2"
+                    onClick={() => setShowStripeCheckout(true)}
+                  >
+                    Place your order
+                  </Button>
                 </div>
               </div>
             </div>
@@ -197,6 +205,17 @@ export default function CheckoutPage() {
         onClose={() => setIsPaymentModalOpen(false)}
         onSave={(payment) => setPaymentMethod(payment)}
       />
+      {/* Flujo de Stripe */}
+      {showStripeCheckout && (
+        <StripeCheckout
+          onSuccess={() => {
+            console.log("Pago exitoso");
+            setShowStripeCheckout(false); // Ocultar el flujo de Stripe después de un pago exitoso
+          }}
+          shippingAddress={shippingAddress.street}
+          phoneNumber={"0981123456"}
+        />
+      )}
     </div>
   );
 }

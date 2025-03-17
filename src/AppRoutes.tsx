@@ -14,6 +14,7 @@ import ConfirmEmailPage from "./pages/ConfirmEmailPage";
 import ClosePage from "./pages/ClosePage";
 import ChangedPasswordPage from "./pages/ChangedPasswordPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import ConfirmCheckoutPage from "./pages/ConfirmCheckoutPage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -107,6 +108,10 @@ function AppRoutes() {
         <Route
           path="/changedPass"
           element={isLoggedIn ? <ChangedPasswordPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/confirmCheckout"
+          element={isLoggedIn ? <ConfirmCheckoutPage /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>
