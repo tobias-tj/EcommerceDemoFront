@@ -8,9 +8,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
+import { Card, CardContent } from "./ui/card";
+import { Label } from "./ui/label";
 
 const STRIPE_KEY = import.meta.env.VITE_STRIPE_KEY_PUBLIC;
 const stripePromise = loadStripe(STRIPE_KEY);
+
+const cardElementOptions = {
+  style: {
+    base: {
+      fontSize: "16px",
+      color: "#32325d",
+      fontFamily: "Inter, sans-serif",
+      "::placeholder": { color: "#aab7c4" },
+      padding: "12px",
+    },
+    invalid: { color: "#fa755a" },
+  },
+};
 
 const CheckoutForm = ({
   onSuccess,
@@ -81,12 +96,30 @@ const CheckoutForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <CardElement className="p-2 border rounded" />
-      <Button type="submit" disabled={!stripe || loading} className="mt-4">
-        {loading ? "Processing..." : "Pay"}
-      </Button>
-    </form>
+    <Card className="p-6 border rounded-lg shadow-lg">
+      <CardContent>
+        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+          Detalles de Pago
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="card-element">Información de la Tarjeta</Label>
+            <div className="p-3 border rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
+              <CardElement id="card-element" options={cardElementOptions} />
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={!stripe || loading}
+            className="w-full text-white bg-blue-600 hover:bg-blue-700"
+          >
+            {loading ? "Procesando..." : "Pagar"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

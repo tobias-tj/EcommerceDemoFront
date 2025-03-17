@@ -15,12 +15,14 @@ import { delay } from "@/utils/delay";
 import { ShippingAddressModal } from "@/components/ShippingAddressModal";
 import { StripeCheckout } from "@/components/StripeCheckout";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
 export default function CheckoutPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [, setIsLoading] = useState<boolean>(true);
+  const navigator = useNavigate();
 
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
 
@@ -240,7 +242,7 @@ export default function CheckoutPage() {
       {showStripeCheckout && (
         <StripeCheckout
           onSuccess={() => {
-            console.log("Pago exitoso");
+            navigator("/confirmCheckout");
             setShowStripeCheckout(false);
           }}
           shippingAddress={shippingAddress.street}
