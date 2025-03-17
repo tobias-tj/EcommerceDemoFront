@@ -1,9 +1,9 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -36,12 +36,12 @@ export function PaymentMethodModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Payment Method</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className="bg-[#fff]">
+        <DrawerHeader>
+          <DrawerTitle>Edit Payment Method</DrawerTitle>
+        </DrawerHeader>
+        <div className="p-4 space-y-4">
           <div>
             <Label>Card Number</Label>
             <Input
@@ -67,7 +67,7 @@ export function PaymentMethodModal({
           </div>
           <Button onClick={handleSave}>Save</Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }

@@ -1,13 +1,13 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 interface ShippingAddressModalProps {
   isOpen: boolean;
@@ -36,12 +36,12 @@ export function ShippingAddressModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Shipping Address</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className="bg-[#fff]">
+        <DrawerHeader>
+          <DrawerTitle>Edit Shipping Address</DrawerTitle>
+        </DrawerHeader>
+        <div className="p-4 space-y-4">
           <div>
             <Label>Full Name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -63,7 +63,7 @@ export function ShippingAddressModal({
           </div>
           <Button onClick={handleSave}>Save</Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }
