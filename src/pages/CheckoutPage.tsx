@@ -67,7 +67,12 @@ export default function CheckoutPage() {
   }, []);
 
   const handleCheckout = () => {
-    if (
+    if (orders == null || orders.length == 0) {
+      toast.error(
+        "Por favor agregue productos de su carrito para procesarlos."
+      );
+      return;
+    } else if (
       !shippingAddress.name ||
       !shippingAddress.street ||
       !shippingAddress.city ||
@@ -75,9 +80,6 @@ export default function CheckoutPage() {
       !shippingAddress.phone
     ) {
       toast.error("Por favor complete todos los campos de la dirección.");
-      return;
-    } else if (orders == null || orders.length == 0) {
-      toast.error("Por favor agregue de su carrito para procesarlos.");
       return;
     }
     setShowStripeCheckout(true);
@@ -216,7 +218,7 @@ export default function CheckoutPage() {
                         <li key={index}>Gs. {price}</li>
                       ))}
                     </ul>
-                    <span>+</span>
+                    {orders == null || orders.length == 0 ? "" : <span>+</span>}
                   </div>
 
                   <span className="text-lg font-bold">

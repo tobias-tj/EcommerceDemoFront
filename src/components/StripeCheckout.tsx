@@ -10,6 +10,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Card, CardContent } from "./ui/card";
 import { Label } from "./ui/label";
+import { toast } from "sonner";
 
 const STRIPE_KEY = import.meta.env.VITE_STRIPE_KEY_PUBLIC;
 const stripePromise = loadStripe(STRIPE_KEY);
@@ -90,6 +91,9 @@ const CheckoutForm = ({
       }
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
+      toast.error(
+        "Ha ocurrido un error al intentar procesar pago. Intente de nuevo😓"
+      );
     } finally {
       setLoading(false);
     }
