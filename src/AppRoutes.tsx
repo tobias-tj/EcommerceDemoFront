@@ -15,6 +15,7 @@ import ClosePage from "./pages/ClosePage";
 import ChangedPasswordPage from "./pages/ChangedPasswordPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ConfirmCheckoutPage from "./pages/ConfirmCheckoutPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -86,6 +87,18 @@ function AppRoutes() {
             isLoggedIn ? (
               <DashboardLayout>
                 <CheckoutPage />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isLoggedIn ? (
+              <DashboardLayout>
+                <ProfilePage />
               </DashboardLayout>
             ) : (
               <Navigate to="/" />

@@ -4,7 +4,7 @@ export interface Order {
   address: string;
   phoneNumber: string;
   status: string;
-  createdAt: Date;
+  createAt: string;
   orderItems: Array<OrderItem>;
 }
 

@@ -1,4 +1,10 @@
-import { Home, ShoppingBagIcon, ShieldCheck, LogOut } from "lucide-react";
+import {
+  Home,
+  ShoppingBagIcon,
+  ShieldCheck,
+  LogOut,
+  User2Icon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,12 +16,13 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import logoEcommerce from "@/assets/logoEcommerce.png";
+import logoEcommerce from "@/assets/logoEcommerce2.png";
 
 const projects = [
   { key: "home", url: "/home", icon: Home, name: "Home" },
   { key: "bag", url: "/bag", icon: ShoppingBagIcon },
   { key: "checkout", url: "/checkout", icon: ShieldCheck },
+  { key: "profile", url: "/profile", icon: User2Icon },
 ];
 
 const config = [{ url: "/closeAccount", icon: LogOut }];
@@ -38,8 +45,8 @@ export function AppSidebar() {
         <motion.img
           src={logoEcommerce}
           alt="Ecommerce"
-          width={80}
-          height={80}
+          width={45}
+          height={45}
           className="mx-auto my-4 bg-white"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
