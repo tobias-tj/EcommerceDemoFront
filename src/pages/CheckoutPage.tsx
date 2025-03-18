@@ -16,6 +16,7 @@ import { ShippingAddressModal } from "@/components/ShippingAddressModal";
 import { StripeCheckout } from "@/components/StripeCheckout";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { CleanAllOrderByUser } from "@/api/checkout/CleanAllOrder";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -83,6 +84,19 @@ export default function CheckoutPage() {
       return;
     }
     setShowStripeCheckout(true);
+  };
+
+  const handleCleanOrders = async () => {
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      await CleanAllOrderByUser(token);
+      await fetchOrdersPrepared();
+      toast.success(
+        "Todas los pedidos fueron cancelados. Lamentamos si no ha recibido lo esperado."
+      );
+    } catch (error) {
+      console.error("Failed to clear Order:", error);
+    }
   };
 
   return (
@@ -227,6 +241,17 @@ export default function CheckoutPage() {
                   <Button className="mt-2" onClick={() => handleCheckout()}>
                     Place your order
                   </Button>
+                  {orders == null || orders.length == 0 ? (
+                    <></>
+                  ) : (
+                    <Button
+                      variant={"outline"}
+                      className="mt-2"
+                      onClick={() => handleCleanOrders()}
+                    >
+                      Cancelar Pedidos
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
