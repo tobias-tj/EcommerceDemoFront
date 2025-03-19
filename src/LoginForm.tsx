@@ -1,47 +1,57 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import animationCheck from "@/assets/animationCheck2.json";
 import Lottie from "react-lottie";
 import { loginAccount, registerAccount } from "./api/account/Auth";
-import AccountRequest from "./types/AccountRequest";
+import { SubmitHandler, useForm } from "react-hook-form";
+import {
+  LoginFormData,
+  RegisterFormData,
+  loginSchema,
+  registerSchema,
+} from "./types/AccountSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface LoginFormProps {
   onLogin: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [login, setLogin] = useState<AccountRequest>({
-    email: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
+  const [isLogin, setIsLogin] = React.useState(true);
+  const [error, setError] = React.useState("");
   const navigate = useNavigate();
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = async () => {
-    const response = await loginAccount(login);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<LoginFormData | RegisterFormData>({
+    resolver: zodResolver(isLogin ? loginSchema : registerSchema),
+  });
 
-    if (response.success) {
-      onLogin();
-      navigate("/home");
+  const onSubmit: SubmitHandler<LoginFormData | RegisterFormData> = async (
+    data
+  ) => {
+    if (isLogin) {
+      const response = await loginAccount(data as LoginFormData);
+
+      if (response.success) {
+        onLogin();
+        navigate("/home");
+      } else {
+        setError(response.message!);
+      }
     } else {
-      setError(response.message!);
-    }
-  };
+      const response = await registerAccount(data as RegisterFormData);
 
-  const handleRegisterSubmit = async () => {
-    if (login.password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
-    const response = await registerAccount(login);
-
-    if (response?.success) {
-      navigate("/confirmEmail", { state: { email: login.email } });
-    } else {
-      setError(response?.message || "Error al registrar la cuenta");
+      if (response?.success) {
+        navigate("/confirmEmail", {
+          state: { email: (data as RegisterFormData).email },
+        });
+      } else {
+        setError(response?.message || "Error al registrar la cuenta");
+      }
     }
   };
 
@@ -68,7 +78,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         <div className="flex flex-col w-full p-10 md:w-1/2">
           <div className="flex justify-center mb-8">
             <button
-              onClick={() => setIsLogin(true)}
+              onClick={() => {
+                setIsLogin(true);
+                reset();
+              }}
               className={`px-6 py-2 rounded-l-full ${
                 isLogin
                   ? "bg-black text-white"
@@ -78,7 +91,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               Iniciar Sesión
             </button>
             <button
-              onClick={() => setIsLogin(false)}
+              onClick={() => {
+                setIsLogin(false);
+                reset();
+              }}
               className={`px-6 py-2 rounded-r-full ${
                 !isLogin
                   ? "bg-black text-white"
@@ -93,7 +109,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
           </h3>
 
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block mb-1 text-gray-600">
                 Correo electrónico
@@ -102,10 +118,33 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                 type="email"
                 placeholder="tuemail@correo.com"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                value={login.email}
-                onChange={(e) => setLogin({ ...login, email: e.target.value })}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block mb-1 text-gray-600">
+                  Nombre Completo
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ingresar Nombre Completo"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  {...register("fullName")}
+                />
+                {!isLogin && errors.fullName && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.fullName?.message}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div>
               <label className="block mb-1 text-gray-600">Contraseña</label>
@@ -113,11 +152,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                 type="password"
                 placeholder="••••••••"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                value={login.password}
-                onChange={(e) =>
-                  setLogin({ ...login, password: e.target.value })
-                }
+                {...register("password")}
               />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             {!isLogin && (
@@ -129,34 +170,39 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                   type="password"
                   placeholder="••••••••"
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  {...register("confirmPassword")}
                 />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
             )}
-          </div>
-          <button
-            onClick={isLogin ? handleSubmit : handleRegisterSubmit}
-            className="w-full py-3 mt-8 font-medium text-white transition bg-black rounded-lg hover:bg-gray-800"
-          >
-            {isLogin ? "Iniciar Sesión" : "Registrarse"}
-          </button>
 
-          {error && (
-            <p className="mt-4 text-sm text-center text-red-500">{error}</p>
-          )}
+            <button
+              type="submit"
+              className="w-full py-3 mt-8 font-medium text-white transition bg-black rounded-lg hover:bg-gray-800"
+            >
+              {isLogin ? "Iniciar Sesión" : "Registrarse"}
+            </button>
 
-          {isLogin && (
-            <p className="mt-4 text-sm text-center text-gray-500">
-              ¿Olvidaste tu contraseña?
-              <span
-                className="ml-1 text-black cursor-pointer hover:underline"
-                onClick={() => navigate("/recoverAccount")}
-              >
-                Recuperar
-              </span>
-            </p>
-          )}
+            {error && (
+              <p className="mt-4 text-sm text-center text-red-500">{error}</p>
+            )}
+
+            {isLogin && (
+              <p className="mt-4 text-sm text-center text-gray-500">
+                ¿Olvidaste tu contraseña?
+                <span
+                  className="ml-1 text-black cursor-pointer hover:underline"
+                  onClick={() => navigate("/recoverAccount")}
+                >
+                  Recuperar
+                </span>
+              </p>
+            )}
+          </form>
         </div>
       </div>
 

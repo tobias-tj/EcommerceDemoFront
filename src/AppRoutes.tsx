@@ -12,10 +12,10 @@ import BagPage from "./pages/BagPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ConfirmEmailPage from "./pages/ConfirmEmailPage";
 import ClosePage from "./pages/ClosePage";
-import ChangedPasswordPage from "./pages/ChangedPasswordPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ConfirmCheckoutPage from "./pages/ConfirmCheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
+import RecoverAccountPage from "./pages/RecoverAccount";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -118,10 +118,7 @@ function AppRoutes() {
           }
         />
         <Route path="/confirmEmail" element={<ConfirmEmailPage />} />
-        <Route
-          path="/changedPass"
-          element={isLoggedIn ? <ChangedPasswordPage /> : <Navigate to="/" />}
-        />
+        <Route path="/recoverAccount" element={<RecoverAccountPage />} />
         <Route
           path="/confirmCheckout"
           element={isLoggedIn ? <ConfirmCheckoutPage /> : <Navigate to="/" />}
