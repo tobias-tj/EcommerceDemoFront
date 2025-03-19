@@ -4,6 +4,7 @@ import {
   ShieldCheck,
   LogOut,
   User2Icon,
+  ChartNoAxesCombinedIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +26,10 @@ const projects = [
   { key: "profile", url: "/profile", icon: User2Icon },
 ];
 
+const adminProjects = [
+  { key: "admin", url: "/dashboard", icon: ChartNoAxesCombinedIcon },
+];
+
 const config = [{ url: "/closeAccount", icon: LogOut }];
 
 const itemVariants = {
@@ -38,6 +43,10 @@ const itemVariants = {
 
 export function AppSidebar() {
   const location = useLocation();
+  const role = localStorage.getItem("role") || "USER";
+
+  const availableProjects =
+    role === "ADMIN" ? [...projects, ...adminProjects] : projects;
 
   return (
     <Sidebar className="flex flex-col h-screen p-4 bg-white shadow-lg w-25 rounded-2xl">
@@ -55,7 +64,7 @@ export function AppSidebar() {
         <SidebarGroup className="flex-grow">
           <SidebarGroupContent>
             <SidebarMenu>
-              {projects.map((project, index) => (
+              {availableProjects.map((project, index) => (
                 <motion.div
                   key={project.key}
                   whileHover={{ scale: 1.05 }}

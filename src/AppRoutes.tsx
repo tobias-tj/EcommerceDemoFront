@@ -16,25 +16,30 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ConfirmCheckoutPage from "./pages/ConfirmCheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import RecoverAccountPage from "./pages/RecoverAccount";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("token") !== null
   );
 
+  const [role, setRole] = useState(localStorage.getItem("role") || "USER");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
     setIsLoggedIn(!!token);
+    setRole(role || "USER");
   }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+    setRole(role);
   };
 
   return (
     <Router>
       <Routes>
-        {/* Ruta de inicio de sesión */}
         <Route
           path="/"
           element={
@@ -105,6 +110,23 @@ function AppRoutes() {
             )
           }
         />
+        <Route
+          path="/dashboard"
+          element={
+            isLoggedIn ? (
+              role === "ADMIN" ? (
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              ) : (
+                <></>
+              )
+            ) : (
+              <></>
+            )
+          }
+        />
+
         <Route
           path="/closeAccount"
           element={

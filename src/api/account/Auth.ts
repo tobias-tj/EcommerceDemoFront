@@ -4,15 +4,14 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const loginAccount = async (loginData: AccountRequest) => {
+export const loginAccount = async (
+  loginData: AccountRequest
+): Promise<{ success: boolean; message?: string; role?: string }> => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, loginData);
-    const token = response.data;
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("isLoggedIn", "true");
-
-    return { success: true, token };
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("role", response.data.role);
+    return { success: true, role: response.data.role };
   } catch (error) {
     console.error("Error en el login:", error);
     return { success: false, message: "Credenciales inválidas" };
