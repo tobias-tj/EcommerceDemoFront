@@ -1,5 +1,6 @@
 import { getAllOrdersByAccount } from "@/api/account/GetAllOrdersByAccount";
 import { getUserDetails } from "@/api/account/GetUserDetails";
+import { PasswordFormModal } from "@/components/PasswordFormModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -21,6 +22,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserDetails | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingOrder, setIsLoadingOrder] = useState<boolean>(true);
+
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const [ordersTotal, setOrdersTotal] = useState<Order[] | null>(null);
 
@@ -80,7 +83,12 @@ export default function ProfilePage() {
               )}
             </div>
             <div className="flex items-end justify-end">
-              <Button>Cambiar Contraseña</Button>
+              <Button
+                variant={"outline"}
+                onClick={() => setIsPasswordModalOpen(true)}
+              >
+                Cambiar Contraseña
+              </Button>
             </div>
           </div>
         </div>
@@ -88,7 +96,7 @@ export default function ProfilePage() {
 
       {/* Productos Pedidos */}
       <Card className="p-5">
-        <CardTitle className="mb-4 text-xl">Productos Pedidos</CardTitle>
+        <CardTitle className="mb-4 text-xl">Productos Comprados</CardTitle>
         <Carousel>
           <CarouselContent>
             {isLoadingOrder ? (
@@ -124,6 +132,10 @@ export default function ProfilePage() {
           </CarouselContent>
         </Carousel>
       </Card>
+      <PasswordFormModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 }
