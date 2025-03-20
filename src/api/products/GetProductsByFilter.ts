@@ -27,6 +27,7 @@ export const getProductsByFilter = async (
       price: item.price,
       rating: item.rating,
       image: item.image,
+      quantity: item.quantity,
     }));
     return products;
   } catch (error) {

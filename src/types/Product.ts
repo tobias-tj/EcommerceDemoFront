@@ -15,5 +15,5 @@ export interface Comments {
   content: string;
   score: number;
   userId: number;
-  userMail: string;
+  email: string;
 }

@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
 import { toast } from "sonner";
+import { CreateCommentByProduct } from "@/api/products/CreateCommentByProduct";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -44,6 +45,8 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  const [content, setContent] = useState<string>("");
+  const [score, setScore] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -63,6 +66,38 @@ const ProductDetailsPage = () => {
         return "Error al agregar el producto";
       },
     });
+  };
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token") || "NULL";
+
+    try {
+      const createdComment = await CreateCommentByProduct(
+        token,
+        content,
+        score,
+        parseInt(productId!)
+      );
+
+      // Actualiza la lista de comentarios en el estado
+      setProduct((prevProduct) => {
+        if (!prevProduct) return prevProduct;
+        return {
+          ...prevProduct,
+          comments: [...prevProduct.comments, createdComment],
+        };
+      });
+
+      // Limpia el formulario
+      setContent("");
+      setScore(0);
+
+      toast.success("Comentario agregado exitosamente");
+    } catch (error) {
+      toast.error("Error al agregar el comentario");
+      console.error("Error adding comment:", error);
+    }
   };
 
   useEffect(() => {
@@ -197,12 +232,12 @@ const ProductDetailsPage = () => {
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-8 h-8">
                       <AvatarImage
-                        src={`https://i.pravatar.cc/150?u=${comment.userMail}`}
+                        src={`https://i.pravatar.cc/150?u=${comment.email}`}
                       />
-                      <AvatarFallback>{comment.userMail[0]}</AvatarFallback>
+                      <AvatarFallback>{comment.email[0]}</AvatarFallback>
                     </Avatar>
                     <Badge className="text-[16px] bg-gray-100 text-gray-900">
-                      {comment.userMail}
+                      {comment.email}
                     </Badge>
                   </div>
 
@@ -224,6 +259,58 @@ const ProductDetailsPage = () => {
             </Card>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* Formulario para agregar nuevos comentarios */}
+      <motion.div variants={fadeIn}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">
+              Agregar Comentario
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAddComment} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="content"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Comentario
+                </label>
+                <textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="w-full p-2 mt-1 border rounded-md"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="score"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Puntuación (0-5)
+                </label>
+                <input
+                  type="number"
+                  id="score"
+                  value={score}
+                  onChange={(e) => setScore(parseFloat(e.target.value))}
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  className="w-full p-2 mt-1 border rounded-md"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Enviar Comentario
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </motion.div>
     </motion.div>
   );

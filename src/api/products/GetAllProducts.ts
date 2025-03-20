@@ -13,6 +13,8 @@ export const getAllProducts = async (): Promise<Product[]> => {
       price: item.price,
       rating: item.rating,
       image: item.image,
+      quantity: item.quantity,
+      brand: item.brand,
     }));
     return products;
   } catch (error) {

@@ -9,17 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getAllProducts } from "@/api/products/GetAllProducts";
 import { delay } from "@/utils/delay";
 import { useNavigate } from "react-router-dom";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddCartByProductId } from "@/api/cart/AddCartByProductId";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 const API_URL_IMAGE = import.meta.env.VITE_API_IMAGE;
 
@@ -29,7 +23,6 @@ export default function DashboardPage() {
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [inStock, setInStock] = useState<boolean | undefined>(undefined);
-  const [brand, setBrand] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -72,10 +65,8 @@ export default function DashboardPage() {
         searchTerm.trim() === "" ? "" : searchTerm,
         minPrice,
         maxPrice,
-        inStock,
-        brand
+        inStock
       );
-      await delay(1000);
       setProducts(filteredProducts);
     } catch (error) {
       console.error("Error searching product:", error);
@@ -89,7 +80,6 @@ export default function DashboardPage() {
     setMinPrice(undefined);
     setMaxPrice(undefined);
     setInStock(undefined);
-    setBrand(undefined);
     fetchProducts();
   };
 
@@ -137,21 +127,6 @@ export default function DashboardPage() {
             />
             <Label htmlFor="inStock">En stock</Label>
           </div>
-          <Select
-            value={brand || ""}
-            onValueChange={(value) => setBrand(value)}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Marca" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Nike">Nike</SelectItem>
-              <SelectItem value="Adidas">Adidas</SelectItem>
-              <SelectItem value="Xiaomi">Xiaomi</SelectItem>
-              <SelectItem value="Apple">Apple</SelectItem>
-              <SelectItem value="Nintendo">Nintendo</SelectItem>
-            </SelectContent>
-          </Select>
           <Button onClick={handleSearch}>Buscar</Button>
           <Button variant="outline" onClick={resetFilters}>
             Limpiar filtros
@@ -206,6 +181,15 @@ export default function DashboardPage() {
                     src={`${API_URL_IMAGE}${product.image}`}
                     alt={product.image}
                   />
+                  <div className="mt-2">
+                    {product.quantity > 0 ? (
+                      <Badge variant="default" className="bg-green-500">
+                        Disponible
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">Agotado</Badge>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
               <div className="p-2">
@@ -225,7 +209,7 @@ export default function DashboardPage() {
                       e.stopPropagation();
                       addProductCart(product.id);
                     }}
-                    disabled={isAddingToCart}
+                    disabled={isAddingToCart || product.quantity === 0}
                   >
                     <Plus />
                   </Button>
