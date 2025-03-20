@@ -10,6 +10,9 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useRef, useState } from "react";
+import { CreateProduct } from "@/api/admin/CreateProduct";
+import { toast } from "sonner";
+import { convertImageToBase64 } from "@/utils/convertImageToBase64";
 
 const FormCreateProduct = () => {
   const [product, setProduct] = useState({
@@ -18,11 +21,12 @@ const FormCreateProduct = () => {
     imagePreview: "",
     brand: "",
     description: "",
-    quantity: "",
-    price: "",
+    quantity: 0,
+    price: 0,
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const clearImage = () => {
     setProduct({
       ...product,
@@ -34,9 +38,42 @@ const FormCreateProduct = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const resetForm = () => {
+    setProduct({
+      name: "",
+      image: null,
+      imagePreview: "",
+      brand: "",
+      description: "",
+      quantity: 0,
+      price: 0,
+    });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Limpiar el input de archivo
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Producto agregado:", product);
+    // console.log("Producto agregado:", product);
+    const token = localStorage.getItem("token") || "NULL";
+    try {
+      await CreateProduct(token, {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+        brand: product.brand,
+        image: product.image,
+      });
+      toast("Producto Agregado con Exito!");
+      resetForm();
+    } catch (error) {
+      toast.error(
+        "Lo sentimos no se ha logrado agregar su producto. Intente de nuevo más tarde."
+      );
+      console.error("Error al agregar el producto", error);
+    }
   };
 
   const handleChange = (
@@ -49,14 +86,20 @@ const FormCreateProduct = () => {
     fileInputRef.current?.click();
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setProduct({
-        ...product,
-        image: file,
-        imagePreview: URL.createObjectURL(file),
-      });
+
+      try {
+        const base64Image = await convertImageToBase64(file);
+        setProduct({
+          ...product,
+          image: file,
+          imagePreview: base64Image,
+        });
+      } catch (error) {
+        console.error("Error al cargar la imagen:", error);
+      }
     }
   };
 
