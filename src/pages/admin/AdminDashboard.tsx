@@ -23,37 +23,36 @@ import {
 } from "recharts";
 import { DollarSign, ShoppingCart, Package, Users } from "lucide-react";
 import FormCreateProduct from "@/components/admin/FormCreateProduct";
-
-// Sample data for charts
-const salesData = [
-  { name: "Enero", ventas: 120, objetivo: 100 },
-  { name: "Febrero", ventas: 210, objetivo: 150 },
-  { name: "Marzo", ventas: 150, objetivo: 200 },
-  { name: "Abril", ventas: 320, objetivo: 250 },
-  { name: "Mayo", ventas: 200, objetivo: 300 },
-  { name: "Junio", ventas: 280, objetivo: 300 },
-];
-
-const brandData = [
-  { name: "Samsung", value: 35 },
-  { name: "Apple", value: 25 },
-  { name: "Xiaomi", value: 20 },
-  { name: "Nintendo", value: 15 },
-  { name: "Otros", value: 5 },
-];
-
-const topProductsData = [
-  { name: "Producto A", ventas: 120 },
-  { name: "Producto B", ventas: 100 },
-  { name: "Producto C", ventas: 80 },
-  { name: "Producto D", ventas: 60 },
-  { name: "Producto E", ventas: 40 },
-];
+import { SalesInformation } from "@/types/SalesInformation";
+import { useEffect, useState } from "react";
+import { getAllInformationSales } from "@/api/admin/GetInformationSales";
 
 // Colors for charts
 const COLORS = ["#1A1A1A", "#333333", "#4D4D4D", "#666666", "#808080"];
 
 const AdminDashboard = () => {
+  const [salesData, setSalesData] = useState<SalesInformation | null>();
+
+  const [, setIsLoading] = useState<boolean>(true);
+
+  const fetchSales = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem("token") || "NULL";
+
+    try {
+      const sales = await getAllInformationSales(token);
+      setSalesData(sales);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSales();
+  }, [salesData]);
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -78,36 +77,36 @@ const AdminDashboard = () => {
           <div className="p-3 bg-gray-100 rounded-full">
             <DollarSign className="w-6 h-6 text-zinc-600" />
           </div>
-          <CardContent className="p-0 ml-4">
+          <CardContent className="flex flex-col items-center">
             <p className="text-sm text-muted-foreground">Total de Ingresos</p>
-            <p className="text-xl font-bold">$12,500</p>
+            <p className="text-xl font-bold">{salesData?.totalIncoming}</p>
           </CardContent>
         </Card>
         <Card className="flex items-center p-4">
           <div className="p-3 bg-gray-100 rounded-full">
             <ShoppingCart className="w-6 h-6 text-zinc-600" />
           </div>
-          <CardContent className="p-0 ml-4">
+          <CardContent className="flex flex-col items-center ">
             <p className="text-sm text-muted-foreground">Ventas Totales</p>
-            <p className="text-xl font-bold">850</p>
+            <p className="text-xl font-bold">{salesData?.saleTotal}</p>
           </CardContent>
         </Card>
         <Card className="flex items-center p-4">
           <div className="p-3 bg-gray-100 rounded-full">
             <Package className="w-6 h-6 text-zinc-600" />
           </div>
-          <CardContent className="p-0 ml-4">
+          <CardContent className="flex flex-col items-center">
             <p className="text-sm text-muted-foreground">Productos</p>
-            <p className="text-xl font-bold">124</p>
+            <p className="text-xl font-bold">{salesData?.countProducts}</p>
           </CardContent>
         </Card>
         <Card className="flex items-center p-4">
           <div className="p-3 bg-gray-100 rounded-full">
             <Users className="w-6 h-6 text-zinc-600" />
           </div>
-          <CardContent className="p-0 ml-4">
+          <CardContent className="flex flex-col items-center ">
             <p className="text-sm text-muted-foreground">Clientes</p>
-            <p className="text-xl font-bold">320</p>
+            <p className="text-xl font-bold">{salesData?.countClients}</p>
           </CardContent>
         </Card>
       </div>
@@ -132,7 +131,7 @@ const AdminDashboard = () => {
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
-                  data={salesData}
+                  data={salesData?.saleList}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -157,7 +156,7 @@ const AdminDashboard = () => {
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <LineChart
-                  data={salesData}
+                  data={salesData?.saleList}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
@@ -197,7 +196,7 @@ const AdminDashboard = () => {
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart
-                  data={topProductsData}
+                  data={salesData?.topProductsList}
                   layout="vertical"
                   margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
                 >
@@ -206,7 +205,7 @@ const AdminDashboard = () => {
                   <YAxis dataKey="name" type="category" />
                   <RechartsTooltip content={<CustomTooltip />} />
                   <Bar dataKey="ventas" fill="#8884d8" name="Unidades Vendidas">
-                    {topProductsData.map((entry, index) => (
+                    {salesData?.topProductsList.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -232,7 +231,7 @@ const AdminDashboard = () => {
               <ResponsiveContainer width="100%" height={350}>
                 <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <Pie
-                    data={brandData}
+                    data={salesData?.brandList}
                     cx="50%"
                     cy="50%"
                     labelLine={true}
@@ -244,7 +243,7 @@ const AdminDashboard = () => {
                       `${name}: ${(percent * 100).toFixed(0)}%`
                     }
                   >
-                    {brandData.map((entry, index) => (
+                    {salesData?.brandList.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
